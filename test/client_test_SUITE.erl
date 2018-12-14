@@ -9,7 +9,8 @@
         ]).
 
 %% Test cases
--export([deploy_and_create_workflow_test/1
+-export([deploy_and_create_workflow_test/1,
+         list_workflows_test/1
         ]).
 
 -include_lib("common_test/include/ct.hrl").
@@ -17,7 +18,8 @@
 
 %%Add all testcases here
 all() ->
- [deploy_and_create_workflow_test].
+ [deploy_and_create_workflow_test,
+ list_workflows_test].
 
  init_per_suite(Config) ->
     %% TODO: start zeebe broker
@@ -53,4 +55,18 @@ deploy_and_create_workflow_test(_Config) ->
     ?assertNotMatch({error, _}, CreateInstanceResponse),
     ?assertEqual(ProcessId, record:get_bpmn_process_id(CreateInstanceResponse)),
     ?assertEqual(WorkflowKey, record:get_workflow_key(CreateInstanceResponse)),
+    ok.
+
+list_workflows_test(_Config) ->
+    %%Deploy
+    Result = zbclient:deploy_workflow(
+                    "order-process",'BPMN',
+                    "/home/deepthi/work/zeebe/zeebe-broker-0.14.0/bin/order-process.bpmn"
+            ),
+    [Workflow] = record:get_workflows(Result),
+    ProcessId = record:get_bpmn_process_id(Workflow),
+    ?assertEqual(<<"order-process">>, ProcessId),
+    Workflows = zbclient:list_workflows(ProcessId),
+    ?assert(is_list(Workflows)),
+    ?assert(length(Workflows) > 0),
     ok.

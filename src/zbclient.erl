@@ -4,7 +4,8 @@
 -export([create_workflow_instance/2,
          create_workflow_instance/4,
          deploy_workflow/3,
-         deploy_workflows/1
+         deploy_workflows/1,
+         list_workflows/1
         ]).
 
 
@@ -24,6 +25,9 @@ deploy_workflow(Name, Type, FilePath) ->
 
 deploy_workflows(Workflows) ->
     workflow:deploy_workflows(Workflows).
+
+list_workflows(BpmnProcessId) ->
+    workflow:list_workflows(BpmnProcessId).
 
 %%====================================================================
 %% Internal functions

@@ -1,7 +1,8 @@
 -module(workflow).
 
 -export([create_workflow_instance/4,
-         deploy_workflows/1
+         deploy_workflows/1,
+         list_workflows/1
         ]).
 
 create_workflow_instance(WorkflowKey, BpmnProcessId, Version, Payload) ->
@@ -26,6 +27,18 @@ deploy_workflows(Workflows) ->
     Response = gateway_protocol_gateway_client:deploy_workflow(ctx:new(), Request),
     case Response of
         {ok, WorkflowMetadata, _GrpcMetadata} -> WorkflowMetadata;
+        Error -> Error
+    end.
+
+
+list_workflows(BpmnProcessId) ->
+    list_workflows(BpmnProcessId, #{}).
+
+list_workflows(BpmnProcessId, Options) ->
+    Request = #{bpmnProcessId => BpmnProcessId},
+    Response = gateway_protocol_gateway_client:list_workflows(ctx:new(), Request, Options),
+    case Response of
+        {ok, ListWorkflowsResponse, _GrpcMetadata} -> record:get_workflows(ListWorkflowsResponse);
         Error -> Error
     end.
 
