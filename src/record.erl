@@ -11,6 +11,9 @@
 get_workflow_key(Record) ->
     maps:get(workflowKey, Record).
 
+get_key(Record) ->
+    maps:get(key, Record).
+
 get_bpmn_process_id(Record) ->
     maps:get(bpmnProcessId, Record).
 

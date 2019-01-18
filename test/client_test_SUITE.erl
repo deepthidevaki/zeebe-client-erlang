@@ -22,7 +22,8 @@ all() ->
  list_workflows_test].
 
  init_per_suite(Config) ->
-    %% TODO: start zeebe broker
+    %% TODO: start zeebe broker??
+    %% Test with a mock broker??
     application:load(grpcbox),
     application:set_env(grpcbox, client, #{channels => [{default_channel, [{http, "localhost", 26500, []}], #{}}]}),
     application:set_env(grpcbox, transport_opts, #{}),
@@ -39,7 +40,7 @@ all() ->
      ok.
 
 deploy_and_create_workflow_test(_Config) ->
-    Result = zbclient:deploy_workflow(
+    Result = zeebe_client:deploy_workflow(
                     "order-process",'BPMN',
                     "/home/deepthi/work/zeebe/zeebe-broker-0.14.0/bin/order-process.bpmn"
             ),
@@ -51,7 +52,7 @@ deploy_and_create_workflow_test(_Config) ->
 
     %% create a workflow instance
     WorkflowKey = record:get_workflow_key(Workflow),
-    CreateInstanceResponse = zbclient:create_workflow_instance(WorkflowKey, ProcessId, Version, "{\"orderId\": 12345}"),
+    CreateInstanceResponse = zeebe_client:create_workflow_instance(WorkflowKey, ProcessId, Version, "{\"orderId\": 12345}"),
     ?assertNotMatch({error, _}, CreateInstanceResponse),
     ?assertEqual(ProcessId, record:get_bpmn_process_id(CreateInstanceResponse)),
     ?assertEqual(WorkflowKey, record:get_workflow_key(CreateInstanceResponse)),
@@ -59,14 +60,14 @@ deploy_and_create_workflow_test(_Config) ->
 
 list_workflows_test(_Config) ->
     %%Deploy
-    Result = zbclient:deploy_workflow(
+    Result = zeebe_client:deploy_workflow(
                     "order-process",'BPMN',
                     "/home/deepthi/work/zeebe/zeebe-broker-0.14.0/bin/order-process.bpmn"
             ),
     [Workflow] = record:get_workflows(Result),
     ProcessId = record:get_bpmn_process_id(Workflow),
     ?assertEqual(<<"order-process">>, ProcessId),
-    Workflows = zbclient:list_workflows(ProcessId),
+    Workflows = zeebe_client:list_workflows(ProcessId),
     ?assert(is_list(Workflows)),
     ?assert(length(Workflows) > 0),
     ok.
