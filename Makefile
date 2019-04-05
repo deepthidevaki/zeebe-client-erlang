@@ -7,7 +7,7 @@ compile:
 	$(REBAR) grpc gen
 	$(REBAR) compile
 
-tests:
+tests: compile	
 	ct_run -pa ./_build/default/lib/*/ebin -logdir logs -dir test/
 
 clean:

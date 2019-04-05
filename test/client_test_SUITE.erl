@@ -9,8 +9,7 @@
         ]).
 
 %% Test cases
--export([deploy_and_create_workflow_test/1,
-         list_workflows_test/1
+-export([deploy_and_create_workflow_test/1
         ]).
 
 -include_lib("common_test/include/ct.hrl").
@@ -18,8 +17,7 @@
 
 %%Add all testcases here
 all() ->
- [deploy_and_create_workflow_test,
- list_workflows_test].
+ [deploy_and_create_workflow_test].
 
  init_per_suite(Config) ->
     %% TODO: start zeebe broker??
@@ -40,10 +38,7 @@ all() ->
      ok.
 
 deploy_and_create_workflow_test(_Config) ->
-    Result = zeebe_client:deploy_workflow(
-                    "order-process",'BPMN',
-                    "/home/deepthi/work/zeebe/zeebe-broker-0.14.0/bin/order-process.bpmn"
-            ),
+    Result = deploy_workflow(),
     [Workflow] = record:get_workflows(Result),
     ProcessId = record:get_bpmn_process_id(Workflow),
     ?assertEqual(<<"order-process">>, ProcessId),
@@ -58,16 +53,19 @@ deploy_and_create_workflow_test(_Config) ->
     ?assertEqual(WorkflowKey, record:get_workflow_key(CreateInstanceResponse)),
     ok.
 
-list_workflows_test(_Config) ->
-    %%Deploy
-    Result = zeebe_client:deploy_workflow(
-                    "order-process",'BPMN',
-                    "/home/deepthi/work/zeebe/zeebe-broker-0.14.0/bin/order-process.bpmn"
-            ),
-    [Workflow] = record:get_workflows(Result),
-    ProcessId = record:get_bpmn_process_id(Workflow),
-    ?assertEqual(<<"order-process">>, ProcessId),
-    Workflows = zeebe_client:list_workflows(ProcessId),
-    ?assert(is_list(Workflows)),
-    ?assert(length(Workflows) > 0),
-    ok.
+% list_workflows_test(_Config) ->
+%     Result = deploy_workflow(),
+%     [Workflow] = record:get_workflows(Result),
+%     ProcessId = record:get_bpmn_process_id(Workflow),
+%     ?assertEqual(<<"order-process">>, ProcessId),
+%     Workflows = zeebe_client:list_workflows(ProcessId),
+%     ?assert(is_list(Workflows)),
+%     ?assert(length(Workflows) > 0),
+%     ok.
+
+%% internal functions %%
+deploy_workflow() ->
+    WorkflowDefinition = filename:join(code:priv_dir(zeebe_client), "order-process.bpmn"),
+    zeebe_client:deploy_workflow(
+                "order-process",'BPMN',
+                WorkflowDefinition).

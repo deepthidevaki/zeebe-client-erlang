@@ -51,5 +51,5 @@ get_workflow_object(Name, Type, FilePath) ->
         {ok, Resource} ->
             {ok, #{name => Name, type => Type, definition => Resource}};
         {error, Reason} ->
-            {error_reading_file, Reason}
+            {error_reading_file, FilePath, Reason}
     end.
