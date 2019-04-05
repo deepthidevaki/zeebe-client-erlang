@@ -4,7 +4,9 @@
 -export([create_workflow_instance/2,
          create_workflow_instance/4,
          deploy_workflow/3,
-         deploy_workflows/1
+         deploy_workflows/1,
+         activate_jobs/4,
+         cancel_job_handler/1
         ]).
 
 
@@ -24,6 +26,13 @@ deploy_workflow(Name, Type, FilePath) ->
 
 deploy_workflows(Workflows) ->
     workflow:deploy_workflows(Workflows).
+
+activate_jobs(Type, Worker, Timeout, MaxJobsToActivate) ->
+    job_handler:activate_jobs(Type, Worker, Timeout, MaxJobsToActivate).
+
+cancel_job_handler(Pid) ->
+    gen_statem:stop(Pid).
+
 
 %list_workflows(BpmnProcessId) ->
 %    workflow:list_workflows(BpmnProcessId).

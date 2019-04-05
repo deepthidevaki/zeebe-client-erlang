@@ -53,6 +53,13 @@ deploy_and_create_workflow_test(_Config) ->
     ?assertEqual(WorkflowKey, record:get_workflow_key(CreateInstanceResponse)),
     ok.
 
+activate_jobs_test(_Config) ->
+    deploy_workflow(),
+    zeebe_client:create_workflow_instance(WorkflowKey, ProcessId, -1, "{\"orderId\": 1}"),
+    {ok, Stream} = zeebe_client:activate_jobs("payment-worker", "test", 100, 10),
+    {ok, H} = grpcbox_client:recv_headers(Stream).
+
+
 % list_workflows_test(_Config) ->
 %     Result = deploy_workflow(),
 %     [Workflow] = record:get_workflows(Result),
