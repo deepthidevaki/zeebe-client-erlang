@@ -5,7 +5,8 @@
          create_workflow_instance/4,
          deploy_workflow/3,
          deploy_workflows/1,
-         activate_jobs/4,
+         activate_jobs/5,
+         complete_job/2,
          cancel_job_handler/1
         ]).
 
@@ -27,8 +28,11 @@ deploy_workflow(Name, Type, FilePath) ->
 deploy_workflows(Workflows) ->
     workflow:deploy_workflows(Workflows).
 
-activate_jobs(Type, Worker, Timeout, MaxJobsToActivate) ->
-    job_handler:activate_jobs(Type, Worker, Timeout, MaxJobsToActivate).
+activate_jobs(Type, Worker, Timeout, MaxJobsToActivate, JobHandler) ->
+    job_handler:activate_jobs(Type, Worker, Timeout, MaxJobsToActivate, JobHandler).
+
+complete_job(JobKey, JobVariables) ->
+    gateway_protocol_gateway_client:complete_job(ctx:new(), #{jobKey=>JobKey, variables => JobVariables}).
 
 cancel_job_handler(Pid) ->
     gen_statem:stop(Pid).
